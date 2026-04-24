@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="max-w-4xl mx-auto p-6">
+    <a href="index.html" class="text-indigo-600 mb-6 inline-block">← Back to Products</a>
+    <h1 id="productName" class="text-3xl font-bold mb-6"></h1>
+
+    <!-- Review Form -->
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+      <h2 class="text-xl font-semibold mb-4">Write a Review</h2>
+      <input id="userName" placeholder="Your Name" class="w-full p-3 border rounded mb-3">
+      <div class="flex gap-2 mb-3">
+        <button onclick="setRating(1)" class="text-3xl">⭐</button>
+        <button onclick="setRating(2)" class="text-3xl">⭐</button>
+        <button onclick="setRating(3)" class="text-3xl">⭐</button>
+        <button onclick="setRating(4)" class="text-3xl">⭐</button>
+        <button onclick="setRating(5)" class="text-3xl">⭐</button>
+      </div>
+      <textarea id="comment" rows="4" class="w-full p-3 border rounded" placeholder="Write your review..."></textarea>
+      <button onclick="submitReview()" class="mt-4 bg-green-600 text-white px-8 py-3 rounded-lg">Submit Review</button>
+    </div>
+
+    <!-- Approved Reviews -->
+    <h2 class="text-2xl font-semibold mb-4">Approved Reviews</h2>
+    <div id="reviews"></div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    let currentRating = 5;
+
+    function setRating(r) { currentRating = r; }
+
+    function submitReview() {
+      const userName = document.getElementById('userName').value;
+      const comment = document.getElementById('comment').value;
+
+      if (!userName || !comment) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      fetch('/api/reviews', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          product_id: productId,
+          user_name: userName,
+          rating: currentRating,
+          comment: comment
+        })
+      })
+      .then(r => r.json())
+      .then(data => {
+        alert(data.status === 'approved' ? 
+          "✅ Review posted successfully!" : 
+          "⏳ Review sent for moderation");
+        loadReviews();
+      });
+    }
+
+    function loadReviews() {
+      fetch(`/api/reviews/${productId}`)
+        .then(r => r.json())
+        .then(reviews => {
+          const container = document.getElementById('reviews');
+          container.innerHTML = reviews.map(r => `
+            <div class="bg-white p-5 rounded-xl shadow mb-4">
+              <div class="flex justify-between">
+                <strong>${r.user_name}</strong>
+                <span>${'⭐'.repeat(r.rating)}</span>
+              </div>
+              <p class="mt-2">${r.comment}</p>
+            </div>
+          `).join('');
+        });
+    }
+
+    // Load product name (you can enhance this)
+    document.getElementById('productName').textContent = "Product Reviews";
+    loadReviews();
+  </script>
+</body>
+</html>
