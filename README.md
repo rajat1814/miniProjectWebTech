@@ -61,8 +61,6 @@ This project demonstrates **secure handling of user-generated content** — a cr
 
 ---
 
-### **Project Screenshots**
-*(You can add screenshots here after running the project)*
 
 ---
 
@@ -75,9 +73,6 @@ This project demonstrates **secure handling of user-generated content** — a cr
 
 ---
 
-### **Declaration**
-This project is developed as part of the 6th Semester Mini Project under the guidance of [Your Faculty Name].
 
 ---
 
-**Made with ❤️ by Rajat Kumar**
